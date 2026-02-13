@@ -2,7 +2,6 @@
 This script contains functions to calculate and plot correlations between time series.
 """
 import plotly.graph_objects as go
-import plotly.express as px
 import pandas as pd
 # from scipy.stats import spearmanr
 
@@ -24,10 +23,13 @@ def calculate_correlations(data: pd.DataFrame, variable1: str, variable2: str, s
     corr_values = []
     shift_values = list(range(start,end+1))
     for shift in shift_values:
-        if correlation_method == "pearson":
-            corr = data[variable1].corr(data[variable2].shift(shift))
-        elif correlation_method == "spearman":
-            corr = data[variable1].corr(data[variable2].shift(shift), method="spearman")
+        corr = data[variable1].corr(data[variable2].shift(shift), method = correlation_method)
+
+        # df_spearman = data.copy(deep=True)
+        # df_spearman[f"{variable2}_shifted"] = df_spearman[variable2].shift(shift)
+        # df_spearman = df_spearman.dropna(subset=[variable1, f"{variable2}_shifted"])
+        # corr = spearmanr(df_spearman[variable1], df_spearman[f"{variable2}_shifted"])[0]
+
         corr_values.append(corr)
         if abs(shift) <= search_best_in_window_width and abs(corr) > abs(best_correlation[1]):
             best_correlation[0], best_correlation[1] = shift, corr
